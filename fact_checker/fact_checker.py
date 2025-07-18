@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 from typing import List
 import openai
 import os
@@ -33,6 +34,8 @@ Provides a simple agent which assess the credibility and relevance of a specific
 
 class FactCheckInput(BaseModel):
     references: List[str] = Field(..., description="List of references to be checked")
+    model: Optional[str] = Field("gpt-4.1", description="Model to use for fact checking (optional)")
+    temperature: Optional[float] = Field(0.3, description="Temperature parameter for model (optional)")
 
 class ReferenceAssessment(BaseModel):
     reference: str = Field(..., description="The original reference text")
@@ -49,12 +52,12 @@ async def verify_references(input: FactCheckInput) -> FactCheckOutput:
     client = get_client()
     for ref in input.references:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model=input.model,
             messages=[
                 {"role": "system", "content": "You are a critical academic reviewer."},
                 {"role": "user", "content": f"Assess the credibility and relevance of this reference: {ref}"}
             ],
-            temperature=0.3
+            temperature=input.temperature
         )
         assessment = response.choices[0].message.content
         verified_refs.append(ReferenceAssessment(reference=ref, assessment=assessment))
