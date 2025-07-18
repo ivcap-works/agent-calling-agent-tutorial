@@ -1,0 +1,28 @@
+[project]
+name = "ivcap-simple-fact-checker-agent"
+version = "0.1.0"
+description = "A very simple fact checking agent"
+authors = [
+    {name = "Max Ott",email = "max.ott@data61.csiro.au"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "openai (>=1.97.0,<2.0.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "ivcap-ai-tool (>=0.7.11,<0.8.0)",
+    "dotenv (>=0.9.9,<0.10.0)"
+]
+
+[tool.poetry-plugin-ivcap]
+service-file = "fact_checker.py"
+#service-id = "urn:ivcap:service:5a4f9c92-cbf9-5251-bd35-4568906405ba"
+service-type = "lambda"
+port = 8078
+# docker
+docker-run-opts = []
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
