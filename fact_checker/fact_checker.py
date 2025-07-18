@@ -46,7 +46,7 @@ async def verify_references(input: FactCheckInput) -> FactCheckOutput:
     """Verify and assess the quality of a list of references and return
     an assement returned by an LLM."""
     verified_refs = []
-    client = OpenAI()
+    client = get_client()
     for ref in input.references:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -59,6 +59,18 @@ async def verify_references(input: FactCheckInput) -> FactCheckOutput:
         assessment = response.choices[0].message.content
         verified_refs.append(ReferenceAssessment(reference=ref, assessment=assessment))
     return FactCheckOutput(results=verified_refs)
+
+def get_client():
+    litellm_proxy = os.environ.get("LITELLM_PROXY")
+    if litellm_proxy:
+        # Ensure the proxy URL ends with /v1 for OpenAI compatibility
+        base_url = litellm_proxy.rstrip("/") + "/v1"
+        return OpenAI(
+            api_key="sk-xxx",  # dummy key, required by the client
+            base_url=base_url
+        )
+    else:
+        return OpenAI()
 
 if __name__ == "__main__":
     import argparse
