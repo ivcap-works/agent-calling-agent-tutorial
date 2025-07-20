@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from typing import List
 import openai
@@ -33,15 +33,26 @@ Provides a simple agent which assess the credibility and relevance of a specific
 )
 
 class FactCheckInput(BaseModel):
+    jschema: str = Field("urn:sd:schema:a2a-tutorial.fact-checker.request.1", alias="$schema")
     references: List[str] = Field(..., description="List of references to be checked")
     model: Optional[str] = Field("gpt-4.1", description="Model to use for fact checking (optional)")
     temperature: Optional[float] = Field(0.3, description="Temperature parameter for model (optional)")
+
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "$schema": "urn:sd:schema:a2a-tutorial.fact-checker.request.1",
+            "references": [
+                "[2] \"What Is The Solar System?\" Space.com. https://www.space.com/56-our-solar-system-facts-formation-and-discovery.html"
+            ]
+        }
+    })
 
 class ReferenceAssessment(BaseModel):
     reference: str = Field(..., description="The original reference text")
     assessment: str = Field(..., description="LLM's assessment of credibility and relevance")
 
 class FactCheckOutput(BaseModel):
+    jschema: str = Field("urn:sd:schema:a2a-tutorial.fact-checker.1", alias="$schema")
     results: List[ReferenceAssessment]
 
 @ivcap_ai_tool("/", opts=ToolOptions(tags=["Fact Checker"], service_id="/"))

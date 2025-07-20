@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 import os
 from dotenv import load_dotenv
@@ -34,24 +34,46 @@ class FactChecker(BaseModel):
     model: Optional[str] = Field("gpt-4.1", description="Model to use for fact checking (optional)")
     temperature: Optional[float] = Field(0.3, description="Temperature parameter for fact checker model (optional)")
 
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "$schema": "urn:sd:schema:a2a-tutorial.report-writer.request.1",
+            "topic": "The Solar System",
+            "fact_checker": {
+                "agent_id": "urn:ivcap:service:1c107789-c5f4-51c4-b086-8a09e0fb39c0"
+            }
+        }
+    })
+
 class ReportRequest(BaseModel):
+    jschema: str = Field("urn:sd:schema:a2a-tutorial.report-writer.request.1", alias="$schema")
     topic: str = Field(..., description="the topic of the report requested", example="The Solar System")
     fact_checker: Optional[FactChecker] = Field(None, description="the fact checker agent to use")
     model: Optional[str] = Field("gpt-4.1", description="Model to use for the report writer (optional)")
     temperature: Optional[float] = Field(0.7, description="Temperature parameter for model (optional)")
+
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "$schema": "urn:sd:schema:a2a-tutorial.report-writer.request.1",
+            "topic": "The Solar System",
+            "fact_checker": {
+                "agent_id": "urn:ivcap:service:1c107789-c5f4-51c4-b086-8a09e0fb39c0"
+            }
+        }
+    })
 
 class ReferenceAssessment(BaseModel):
     reference: str = Field(..., description="The original reference text")
     assessment: Optional[str] = Field(None, description="LLM's assessment of credibility and relevance")
 
 class ReportResponse(BaseModel):
+    jschema: str = Field("urn:sd:schema:a2a-tutorial.report-writer.1", alias="$schema")
     topic: str
     content: str
     references: List[ReferenceAssessment]
 
-@ivcap_ai_tool("/", opts=ToolOptions(tags=["Report Writerr"]))
+@ivcap_ai_tool("/", opts=ToolOptions(tags=["Report Writer"]))
 def generate_report(request: ReportRequest, ctxt: JobContext) -> ReportResponse:
-    """Attempts tow write a report on some topic and uses a separate fact checking agent to validate the reference used."""
+    """Attempts to write a report on some topic and uses a separate fact checking agent to validate the reference used."""
 
     logger.debug(f"Generating report for topic: {request.topic}")
     report_text = generate_initial_report(request)
