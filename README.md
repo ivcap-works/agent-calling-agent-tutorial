@@ -88,7 +88,7 @@ The [fact_checker.py](./fact_checker/fact_checker.py) implements the agent's fun
 
 ## Report Writer
 
-The report writer in the [report_writer](./report_writer/) subdirectory follows a very similar script.
+The report writer in the [report_writer](./report_writer/) subdirectory follows a very similar script with the implementation found in [report_writer.py](./report_writer/report_writer.py).
 
 The initial report on a specific topic is sent to an LLM using the
 following prompts:
@@ -99,7 +99,7 @@ following prompts:
     [1] Author/Source - URL <br>
     [2] Author/Source - URL
 
-After receiving the reply from the LLM, the included references are processed by `check_references`:
+After receiving the reply from the LLM, the included references are processed by `check_references` (in [report_writer.py](./report_writer/report_writer.py#L107)):
 
 ```python
 def check_references(report_text: str, request: ReportRequest, ctxt: JobContext):
