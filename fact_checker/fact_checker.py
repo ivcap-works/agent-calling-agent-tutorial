@@ -76,12 +76,4 @@ def get_client():
         return OpenAI()
 
 if __name__ == "__main__":
-    import argparse
-    def custom_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
-        parser.add_argument('--litellm-proxy', type=str, help='Address of the the LiteLlmProxy')
-        args = parser.parse_args()
-        if args.litellm_proxy != None:
-            os.setenv("LITELLM_PROXY", args.litellm_proxy)
-        return args
-
-    start_tool_server(service, custom_args=custom_args)
+    start_tool_server(service)

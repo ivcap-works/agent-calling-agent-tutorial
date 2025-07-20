@@ -9,7 +9,12 @@ run:
 
 TEST_REQUEST=${PROJECT_DIR}/tests/space_com.json
 test-local:
-	curl -i -X POST -H "timeout: 300" -H "content-type: application/json" --data @${TEST_REQUEST} http://localhost:${PORT}/
+	curl -X POST --silent \
+	  -H "timeout: 300" \
+		-H "content-type: application/json" \
+		--data @${TEST_REQUEST} \
+		http://localhost:${PORT}/ \
+	| jq -r '.results[0].assessment' | glow
 
 test-job: IVCAP_API=https://develop.ivcap.net
 test-job:

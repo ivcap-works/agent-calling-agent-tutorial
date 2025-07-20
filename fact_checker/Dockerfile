@@ -5,7 +5,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 RUN poetry config virtualenvs.create false && poetry install --no-root
 
-COPY . .
+COPY fact_checker.py .
 
 # VERSION INFORMATION
 ARG VERSION ???
